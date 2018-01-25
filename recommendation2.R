@@ -63,24 +63,20 @@ nrc_word_counts %>%
 data_reco<-merge (df1,bing_word_counts,by="asin",all.x=TRUE)
 
 data_rec_2<- subset(data_reco,select=c(asin,reviewerID,n))
-
+data_rec_3 <- as.matrix(data_rec_2)
 #data_rec_2$asin<-as.numeric(data_rec_2$asin)
 #data_rec_2$n<-as.numeric(data_rec_2$n)
 
-data_mtx<-as(data_rec_2,"realRatingMatrix")
+data_mtx<-as(data_rec_3,"realRatingMatrix")
 
-data_mtx_1000 <- data_mtx
+data_mtx_1000 <- data_mtx[1:1000]
+as(data_mtx, "matrix")[,1:10]
+#e <- evaluationScheme(data_mtx_1000, method="split", train=0.8, given=1 ,goodRating=3)
+#as(e, "list")
+r1 <- Recommender(data_mtx, "UBCF")
 
-e <- evaluationScheme(data_mtx_1000, method="split", train=0.8, given=1 ,goodRating=2)
-
-r1 <- Recommender(getData(e, "train"), "UBCF")
-
-#p1 <- predict(r1, getData(e, "known"), type="ratings")
-
-pre <- predict(r1, data_mtx_1000, n = 2)
-
+p1 <- predict(r1, data_mtx, type="ratings")
+as(p1, "matrix")
+pre <- predict(r1, data_mtx, n = 1)
+pre
 as(pre, "list")
-
-#as(p1, "matrix")[,1:10]
-
-error <- rbind(rbind(UBCF = calcPredictionAccuracy(p1, getData(e, "unknown"))))

@@ -84,4 +84,3 @@ as(pre, "list")
 #as(p1, "matrix")[,1:10]
 
 error <- rbind(rbind(UBCF = calcPredictionAccuracy(p1, getData(e, "unknown"))))
-

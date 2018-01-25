@@ -59,3 +59,17 @@ nrc_word_counts %>%
   ylab("Contribution to sentiment")
 
 #système de recommendation
+
+data_reco<-merge (df1,bing_word_counts,by="asin",all.x=TRUE)
+
+data_mtx<-as(data_reco,"realRatingMatrix")
+
+data_mtx_1000 <- data_mtx[1:1000]
+
+e <- evaluationScheme(data_mtx_1000, method="split", train=0.8, given=1 ,goodRating=5)
+
+r1 <- Recommender(getData(e, "train"), "UBCF")
+
+p1 <- predict(r1, getData(e, "known"), type="ratings")
+
+error <- rbind(rbind(UBCF = calcPredictionAccuracy(p1, getData(e, "unknown"))))

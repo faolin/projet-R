@@ -3,7 +3,7 @@ library(dplyr)
 library(tidytext)
 library(ggplot2)
 library(recommenderlab)
-df <- fread("C:/Users/Totus/Desktop/frnaçois/projet-R/data_transformer.csv")
+df <- fread("C:/Users/faolinv2/Documents/projet-R/data_transformer.csv")
 
 N <- floor(nrow(df) * (1/100))
 df1 <- df[sample(1:nrow(df),N),]
@@ -66,8 +66,14 @@ data_mtx<-as(data_reco,"realRatingMatrix")
 
 data_mtx_1000 <- data_mtx[1:1000]
 
-e <- evaluationScheme(data_mtx_1000, method="split", train=0.8, given=1 ,goodRating=5)
+e <- evaluationScheme(data_mtx_1000, method="split", train=0.8, given=1 ,goodRating=NA)
 
-r1 <- Recommender(getData(e, "train"), "UBCF")
+r1 <- Recommender(data_mtx_1000, method = "UBCF")
+pre <- predict(r1, data_mtx_1000, n = 2)
 
+as(pre, "list")
 p1 <- predict(r1, getData(e, "known"), type="ratings")
+
+as(p1, "matrix")[,1:10]
+
+error <- rbind(rbind(UBCF = calcPredictionAccuracy(p1, getData(e, "unknown"))))

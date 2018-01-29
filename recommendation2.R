@@ -3,6 +3,7 @@ library(dplyr)
 library(tidytext)
 library(ggplot2)
 library(recommenderlab)
+library(ROCR)
 df <- fread("C:/Users/faolinv2/Documents/projet-R/data_transformer.csv")
 
 
@@ -71,8 +72,7 @@ data_rec_3 <- as.matrix(data_rec_2)
 data_rec_3<- sapply(data.frame(data_rec_3),as.numeric)
 
 data_mtx<- as(data_rec_3,"realRatingMatrix")
-
-#e <- evaluationScheme(data_mtx_1000, method="split", train=0.8, given=1 ,goodRating=3)
+e <- evaluationScheme(data_mtx, method="split", train=0.8, given=1 ,goodRating=3)
 #as(e, "list")
 r1 <- Recommender(data_mtx, "UBCF")
 
@@ -81,18 +81,9 @@ as(p1, "matrix")
 pre <- predict(r1, data_mtx, n = 1)
 pre
 as(pre, "list")
+es <- evaluationScheme(data_mtx, method="cross-validation",
+                       k=10, given=3)
 
-#recommandation avec nrc
-data_reco_nrc<-merge (df1,nrc_word_counts,by="asin",all.x=TRUE)
+## run evaluation
+ev <- evaluate(p1, "POPULAR")
 
-data_rec_nrc_2<- subset(data_reco_nrc,select=c(asin,reviewerID,n))
-data_rec_nrc_3 <- as.matrix(data_rec_nrc_2)
-#data_rec_2$asin<-as.numeric(data_rec_2$asin)
-data_rec_nrc_3<- sapply(data.frame(data_rec_nrc_3),as.numeric)
-
-data_mtx_nrc <- as(data_rec_nrc_3,"realRatingMatrix")
-
-r1_nrc <- Recommender(data_mtx_nrc, "UBCF")
-
-p1_nrc <- predict(r1_nrc, data_mtx_nrc, type="ratings")
-as(p1_nrc, "matrix")
